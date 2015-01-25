@@ -5,11 +5,16 @@
 package com.faraox.rest.poc.resource;
 
 import com.faraox.rest.poc.bean.Person;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.BodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.FormDataParam;
+import com.sun.jersey.multipart.MultiPart;
 import com.sun.jersey.spi.resource.Singleton;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -39,11 +44,29 @@ public class PersonResource {
     /**
      * Upload a File
      */
+//    @POST
+//    @Path("upload")
+//    @Consumes(MediaType.MULTIPART_FORM_DATA)
+//    @Produces(MediaType.TEXT_PLAIN)
+//    public Response uploadFile(@FormDataParam("file") InputStream fileInputStream,
+//            @FormDataParam("file") FormDataContentDisposition fileDisposition) {
+//        
+//        System.out.println("File name: " + fileDisposition.getFileName());
+//        return Response.status(200).entity("Success").build();
+//    }
+    
     @POST
-    @Path("/upload")
+    @Path("upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadFile(@FormDataParam("file") InputStream stream) {
-
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response uploadFile(FormDataMultiPart multiPart) {
+        
+        List<BodyPart> bodyParts = multiPart.getBodyParts();
+        System.out.println("First part headers: " + bodyParts.get(0).getHeaders());
+        System.out.println("File type: " + bodyParts.get(0).getMediaType().getType());
+        System.out.println("File name: " + bodyParts.get(0).getContentDisposition().getFileName());
+        System.out.println("Content disposition type: " + bodyParts.get(0).getContentDisposition().getType());
+        
         return Response.status(200).entity("Success").build();
     }
 
@@ -71,7 +94,7 @@ public class PersonResource {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response createPerson(@Context HttpHeaders headers, Person person) {
-        
+
         System.out.println("Headers: " + headers.getRequestHeaders());
         Long personId = person.getPersonId();
         if (!personMap.containsKey(personId)) {
