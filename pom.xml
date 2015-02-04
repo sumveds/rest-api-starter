@@ -77,9 +77,9 @@
         <!-- JSON serialization support of JAXB beans when using the 
         MIME media type application/json -->
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>1.9</version>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>2.15</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

@@ -21,7 +21,7 @@ import javax.ws.rs.core.UriInfo;
  * @author sshami
  */
 @Singleton
-@Path("/person")
+@Path("/persons")
 public class PersonResource {
 
     private final Map<Long, Person> personMap;
@@ -47,7 +47,7 @@ public class PersonResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getPerson(@PathParam("personId") Long personId) {
 
-        return Response.created(URI.create("http://localhost:8084/rest/person/"
+        return Response.created(URI.create("/persons/"
                 + personId)).entity(personMap.get(personId)).
                 status(Response.Status.OK).build();
     }
@@ -65,7 +65,7 @@ public class PersonResource {
             // throw some exception
         }
 
-        return Response.created(URI.create("http://localhost:8084/rest/person/"
+        return Response.created(URI.create("/person/"
                 + personId)).entity(person).
                 status(Response.Status.CREATED).build();
     }
