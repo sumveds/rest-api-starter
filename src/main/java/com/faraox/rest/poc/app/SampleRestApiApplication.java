@@ -5,6 +5,7 @@
  */
 package com.faraox.rest.poc.app;
 
+import com.faraox.rest.poc.exception.mapper.PersonNotFoundExceptionMapper;
 import com.faraox.rest.poc.resource.PersonResource;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +26,7 @@ public class SampleRestApiApplication extends Application {
         Set<Class<?>> resources = new HashSet<>();
         resources.add(PersonResource.class);
         resources.add(MultiPartFeature.class);
+        resources.add(PersonNotFoundExceptionMapper.class);
         return resources;
     }
 }

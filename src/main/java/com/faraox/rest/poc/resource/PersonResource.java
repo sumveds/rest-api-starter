@@ -5,6 +5,7 @@
 package com.faraox.rest.poc.resource;
 
 import com.faraox.rest.poc.bean.Person;
+import com.faraox.rest.poc.exception.PersonNotFoundException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,22 +42,22 @@ public class PersonResource {
         personMap.put(2L, new Person(2L, "Dinesh", "Damodharan"));
         personMap.put(3L, new Person(3L, "Sumit", "Ranjan"));
     }
-    
+
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response uploadPerson(@FormDataParam("file") InputStream fileInputStream, 
-            @FormDataParam("file") FormDataContentDisposition contentDisposition) 
+    public Response uploadPerson(@FormDataParam("file") InputStream fileInputStream,
+            @FormDataParam("file") FormDataContentDisposition contentDisposition)
             throws FileNotFoundException, IOException {
-        
+
         String fileName = contentDisposition.getFileName();
         System.out.println("File name: " + fileName);
-        System.out.println("Content disposition parameters: " + 
-                contentDisposition.getParameters());
+        System.out.println("Content disposition parameters: "
+                + contentDisposition.getParameters());
         System.out.println("Content disposition type: " + contentDisposition.getType());
         System.out.println("Content disposition name: " + contentDisposition.getName());
-        
+
         String filePath = "C://Users//sumved.shami//Desktop//" + fileName;
         try (OutputStream outputStream = new FileOutputStream(filePath)) {
             int read = 0;
@@ -65,7 +66,7 @@ public class PersonResource {
                 outputStream.write(bytes, 0, read);
             }
         }
-        
+
         return Response.status(Response.Status.OK).entity("File upload success").build();
     }
 
@@ -80,25 +81,32 @@ public class PersonResource {
     @Path("/{personId}")
     @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getPerson(@CookieParam("JSESSIONID") String sessionId, 
-            @MatrixParam("sport") String sport, 
-            @Context HttpHeaders headers,
-            @PathParam("personId") Long personId) {
-        
-        MultivaluedMap<String, String> headersMap = headers.getRequestHeaders();
+    public Response getPerson(/*@CookieParam("JSESSIONID") String sessionId,
+            @MatrixParam("sport") String sport,
+            @Context HttpHeaders headers,*/
+            @PathParam("personId") Long personId)
+            throws PersonNotFoundException {
+
+        /*MultivaluedMap<String, String> headersMap = headers.getRequestHeaders();
         System.out.println("*******************Headers*******************");
-        for(String key : headersMap.keySet()) {
+        for (String key : headersMap.keySet()) {
             System.out.println("[" + key + ": " + headersMap.getFirst(key) + "]");
         }
         System.out.println("*********************************************");
         System.out.println("Cookie session id: " + sessionId);
         System.out.println("*********************************************");
         System.out.println("Favourite sport: " + sport);
-        System.out.println("*********************************************");
+        System.out.println("*********************************************");*/
 
-        return Response.created(URI.create("/persons/"
-                + personId)).entity(personMap.get(personId)).
-                status(Response.Status.OK).build();
+        Person person = personMap.get(personId);
+        if (person != null) {
+            return Response.created(URI.create("/persons/"
+                    + personId)).entity(person).
+                    status(Response.Status.OK).build();
+        } else {
+            throw new PersonNotFoundException("Person with id "
+                    + personId + " is unavailable.");
+        }
     }
 
     @POST
