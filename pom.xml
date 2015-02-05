@@ -81,6 +81,25 @@
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>2.15</version>
         </dependency>
+        <!--To use Declarative Linking you need to add jersey-jersey.ent module.-->
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-declarative-linking</artifactId>
+            <version>2.15</version>
+        </dependency>
+        <!--Additionaly you will need to add the following dependencies, 
+        if you are not deploying into a container that is already including them.-->
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>

@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -38,9 +39,16 @@ public class PersonResource {
     public PersonResource() {
         System.out.println("Invoking person resource constructor...");
         personMap = new HashMap<>();
-        personMap.put(1L, new Person(1L, "Sumved", "Shami"));
-        personMap.put(2L, new Person(2L, "Dinesh", "Damodharan"));
-        personMap.put(3L, new Person(3L, "Sumit", "Ranjan"));
+        personMap.put(1L, new Person(1L, "Lionel", "Messi"));
+        personMap.put(2L, new Person(2L, "Christian", "Ronaldo"));
+        personMap.put(3L, new Person(3L, "Pete", "Sampras"));
+        personMap.put(4L, new Person(4L, "Roger", "Federer"));
+        personMap.put(5L, new Person(5L, "Sachin", "Tendulkar"));
+        personMap.put(6L, new Person(6L, "George", "Bush"));
+        personMap.put(7L, new Person(7L, "Jackie", "Chan"));
+        personMap.put(8L, new Person(8L, "Hu", "Jintao"));
+        personMap.put(9L, new Person(9L, "Andre", "Agassi"));
+        personMap.put(10L, new Person(10L, "Michael", "Schumacher"));
     }
 
     @POST
@@ -71,19 +79,13 @@ public class PersonResource {
     }
 
     @GET
-    public Response getPersons(@Context UriInfo uriInfo) {
-
-        System.out.println("Query parameters: " + uriInfo.getQueryParameters().size());
-        return Response.status(200).entity(personMap.values()).build();
-    }
-
-    @GET
     @Path("/{personId}")
     @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getPerson(/*@CookieParam("JSESSIONID") String sessionId,
             @MatrixParam("sport") String sport,
             @Context HttpHeaders headers,*/
+            @Context UriInfo uriInfo,
             @PathParam("personId") Long personId)
             throws PersonNotFoundException {
 
@@ -97,12 +99,13 @@ public class PersonResource {
         System.out.println("*********************************************");
         System.out.println("Favourite sport: " + sport);
         System.out.println("*********************************************");*/
-
+        
+        System.out.println("Absolute URI: " + uriInfo.getAbsolutePath().toString());
+        System.out.println("Base URI: " + uriInfo.getBaseUri().toString());
+        
         Person person = personMap.get(personId);
         if (person != null) {
-            return Response.created(URI.create("/persons/"
-                    + personId)).entity(person).
-                    status(Response.Status.OK).build();
+            return Response.ok(person).build();
         } else {
             throw new PersonNotFoundException("Person with id "
                     + personId + " is unavailable.");
@@ -112,19 +115,23 @@ public class PersonResource {
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response createPerson(@Context HttpHeaders headers, Person person) {
-
-        System.out.println("Headers: " + headers.getRequestHeaders());
+    public Response createPerson(@Context UriInfo uriInfo, Person person) {
+        
         Long personId = person.getPersonId();
         if (!personMap.containsKey(personId)) {
             personMap.put(personId, person);
         } else {
             // throw some exception
         }
-
-        return Response.created(URI.create("/person/"
-                + personId)).entity(person).
-                status(Response.Status.CREATED).build();
+        
+        URI location = uriInfo.getAbsolutePathBuilder()
+                .path(personId.toString()).build();
+        
+        return Response.created(location).entity(person)
+                .status(Response.Status.CREATED)
+                .link(location, "update")
+                .link(location, "get")
+                .build();
     }
 
     @PUT
