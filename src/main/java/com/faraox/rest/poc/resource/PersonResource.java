@@ -18,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -79,7 +80,21 @@ public class PersonResource {
     @Path("/{personId}")
     @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getPerson(@PathParam("personId") Long personId) {
+    public Response getPerson(@CookieParam("JSESSIONID") String sessionId, 
+            @MatrixParam("sport") String sport, 
+            @Context HttpHeaders headers,
+            @PathParam("personId") Long personId) {
+        
+        MultivaluedMap<String, String> headersMap = headers.getRequestHeaders();
+        System.out.println("*******************Headers*******************");
+        for(String key : headersMap.keySet()) {
+            System.out.println("[" + key + ": " + headersMap.getFirst(key) + "]");
+        }
+        System.out.println("*********************************************");
+        System.out.println("Cookie session id: " + sessionId);
+        System.out.println("*********************************************");
+        System.out.println("Favourite sport: " + sport);
+        System.out.println("*********************************************");
 
         return Response.created(URI.create("/persons/"
                 + personId)).entity(personMap.get(personId)).
