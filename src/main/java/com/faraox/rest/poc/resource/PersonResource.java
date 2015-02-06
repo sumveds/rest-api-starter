@@ -13,7 +13,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -80,7 +82,6 @@ public class PersonResource {
 
     @GET
     @Path("/{personId}")
-    @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getPerson(/*@CookieParam("JSESSIONID") String sessionId,
             @MatrixParam("sport") String sport,
@@ -110,6 +111,36 @@ public class PersonResource {
             throw new PersonNotFoundException("Person with id "
                     + personId + " is unavailable.");
         }
+    }
+    
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response getPersons(@Context UriInfo uriInfo, 
+            @QueryParam("page") @DefaultValue("0") Integer page, 
+            @QueryParam("rpp") @DefaultValue("2") Integer recordsPerPage) {
+        
+        int first = (page * recordsPerPage) + 1;
+        int last = first + recordsPerPage;
+        
+        Set<Person> persons = new HashSet<>();
+        
+        for(int i = first; i < last; i++) {
+            persons.add(personMap.get((long) i));
+        }
+        
+        Response.ResponseBuilder builder = Response.ok(persons);
+        if(page > 0) {
+            URI prev = uriInfo.getAbsolutePathBuilder()
+                .queryParam("page", page - 1)
+                .queryParam("rpp", recordsPerPage).build();
+            builder = builder.link(prev, "prev");
+        }
+        URI next = uriInfo.getAbsolutePathBuilder()
+                .queryParam("page", page + 1)
+                .queryParam("rpp", recordsPerPage).build();
+        builder = builder.link(next, "next");
+        
+        return builder.build();
     }
 
     @POST

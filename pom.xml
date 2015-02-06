@@ -66,13 +66,13 @@
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
-            <version>2.11</version>
+            <version>2.15</version>
         </dependency>
         <!-- jersey media multipart for file upload -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
-            <version>2.11</version>
+            <version>2.15</version>
         </dependency>
         <!-- JSON serialization support of JAXB beans when using the 
         MIME media type application/json -->

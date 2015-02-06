@@ -18,7 +18,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
  *
  * @author sumved.shami
  */
-@ApplicationPath("resources")
+@ApplicationPath("api")
 public class SampleRestApiApplication extends Application {
 
     @Override
