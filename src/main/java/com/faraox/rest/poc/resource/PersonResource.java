@@ -184,16 +184,12 @@ public class PersonResource {
     @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response deletePerson(@PathParam("personId") Long personId) {
-
-        Person person = new Person();
+        
         if (personMap.containsKey(personId)) {
             personMap.remove(personId);
-            person.setFlag("deleted");
+            return Response.status(Response.Status.NO_CONTENT).build();
         } else {
-            person.setFlag("not_found");
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
-
-        return Response.created(null).entity(person).
-                status(Response.Status.OK).build();
     }
 }
